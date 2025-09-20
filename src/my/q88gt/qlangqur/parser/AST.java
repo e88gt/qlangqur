@@ -16,17 +16,7 @@ public class AST
 	public String asString()
 	{
 		StringBuilder out = new StringBuilder();
-		
-		for (int i = 0; i < size; i++)
-		{
-			if (i + 1 < size)
-			{
-				out.append("- ");
-			}
-			
-			out.append(nodes.get(i).toString());
-		}
-		
+		nodes.forEach(out::append);
 		return out.toString();
 	}
 	

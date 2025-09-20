@@ -21,17 +21,17 @@ public class Tokenizer
 		
 		while (!isEof())
 		{
-			if (Character.isWhitespace(peek().get()))
+			if(Character.isWhitespace(peek().get()))
 			{
 				advance();
 				continue;
 			}
 			
-			if (Character.isLetter(peek().get()) || peek().get() == '_')
+			if (Character.isLetter(peek().get()) || expect('_'))
 			{
 				StringBuilder word = new StringBuilder();
 				
-				while (Character.isLetterOrDigit(peek().get()) || peek().get() == '_')
+				while (Character.isLetterOrDigit(peek().get()) || expect('_'))
 				{
 					if (peekNext().isPresent())
 					{
@@ -47,7 +47,7 @@ public class Tokenizer
 			{
 				StringBuilder number = new StringBuilder();
 				
-				while (Character.isLetterOrDigit(peek().get()) || peek().get() == '_')
+				while (Character.isLetterOrDigit(peek().get()) || expect('_'))
 				{
 					if (peekNext().isPresent())
 					{
@@ -59,24 +59,44 @@ public class Tokenizer
 				continue;
 			}
 			
-			if (peek().get() == '=')
+			if (expect('='))
 			{
 				tokens.add(new Token(TokenType.ASSIGN, Optional.empty()));
 				advance();
 				continue;
 			}
 			
-			if (peek().get() == ';')
+			if (expect(';'))
 			{
 				tokens.add(new Token(TokenType.SEMI, Optional.empty()));
 				advance();
 				continue;
 			}
+			
+			advance();
 		}
 		
 		tokens.add(new Token(TokenType.EOF, Optional.empty()));
 		
 		return tokens;
+	}
+	
+	private void skipSpace()
+	{
+		while(Character.isWhitespace(peek().get()))
+		{
+			advance();
+		}
+	}
+	
+	private boolean expect(char expecting)
+	{
+		return peek().get() == expecting;
+	}
+	
+	private boolean expectNext(char expecting)
+	{
+		return peekNext().get() == expecting;
 	}
 	
 	private boolean isEof()
@@ -106,21 +126,14 @@ public class Tokenizer
 	
 	private Optional<Character> peekBy(int by)
 	{
-		if (isEofBy(by))
-		{
-			return Optional.empty();
-		}
-		return Optional.ofNullable(source().charAt(index + by));
+		return isEofBy(by) ? Optional.empty() : Optional.ofNullable(source().charAt(index + by));
 	}
 	
 	private char advanceBy(int by)
 	{
-		try
-		{
+		try {
 			return source().charAt(index);
-		}
-		finally
-		{
+		} finally {
 			index += by;
 		}
 	}

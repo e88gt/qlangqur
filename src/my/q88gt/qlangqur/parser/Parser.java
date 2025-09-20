@@ -42,11 +42,6 @@ public class Parser
 		return new VarDecl(name, value);
 	}
 	
-	private boolean expect(TokenType type)
-	{
-		return peek().get().type() == type;
-	}
-	
 	private boolean isEof()
 	{
 		return isEofBy(0);
@@ -74,21 +69,14 @@ public class Parser
 	
 	private Optional<Token> peekBy(int by)
 	{
-		if (isEofBy(by))
-		{
-			return Optional.empty();
-		}
-		return Optional.ofNullable(tokens().get(index + by));
+		return isEofBy(by) ? Optional.empty() : Optional.ofNullable(tokens().get(index + by));
 	}
 	
 	private Token advanceBy(int by)
 	{
-		try
-		{
+		try {
 			return tokens().get(index);
-		}
-		finally
-		{
+		} finally {
 			index += by;
 		}
 	}
